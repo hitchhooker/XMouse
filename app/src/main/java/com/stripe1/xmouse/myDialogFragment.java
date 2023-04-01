@@ -88,8 +88,12 @@ public class myDialogFragment extends DialogFragment {
     
     // Override the Fragment.onAttach() method to instantiate the NoticeDialogListener
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        Activity activity = null;
+        if (context instanceof Activity) {
+            activity = (Activity) context;
+        }
         // Verify that the host activity implements the callback interface
         try {
             // Instantiate the NoticeDialogListener so we can send events to the host

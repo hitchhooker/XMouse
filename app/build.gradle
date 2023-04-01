@@ -10,7 +10,7 @@ android {
     compileSdkVersion 33
 
     defaultConfig {
-        applicationId "com.rotkonetworks.xmouse"
+        applicationId "com.stripe1.xmouse"
         minSdkVersion 14
         targetSdkVersion 33
         versionCode 25
@@ -22,7 +22,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-    namespace 'com.rotkonetworks.xmouse'
+    namespace 'com.stripe1.xmouse'
 }
 
 dependencies {
