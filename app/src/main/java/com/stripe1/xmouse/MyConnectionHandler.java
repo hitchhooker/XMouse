@@ -27,6 +27,10 @@ import java.io.OutputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 
+import android.os.StrictMode;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
 
 public class MyConnectionHandler {
 
@@ -59,6 +63,33 @@ public class MyConnectionHandler {
 
                 Toast.makeText(myActivity, "A connection setting is blank", Toast.LENGTH_LONG).show();
                 return;
+            }
+		
+            if (MainActivity.setting_wolmac!="") {
+                try {
+                    StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+                    StrictMode.setThreadPolicy(policy);
+
+                    String hexstr = "FFFFFFFFFFFF" + MainActivity.setting_wolmac.replace(":", "").repeat(16);
+                    int l = hexstr.length();
+                    byte[] buffer = new byte[l / 2];
+                    for (int i = 0; i < l; i += 2) {
+                        buffer[i / 2] = (byte) ((Character.digit(hexstr.charAt(i), 16) << 4)
+                                + Character.digit(hexstr.charAt(i + 1), 16));
+                    }
+                    DatagramSocket socket = new DatagramSocket();
+                    socket.setBroadcast(true);
+                    /* FIXME: instead of using 255.255.255.255 it should be the actual WIFI/Ethernet broadcast address */
+                    DatagramPacket packet = new DatagramPacket(buffer, buffer.length, InetAddress.getByName("255.255.255.255"), 40000);
+                    socket.send(packet);
+                    socket.close();
+
+                    Thread.sleep(5000);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
             }
 
             SshConnectTask  t = (SshConnectTask) new SshConnectTask(	myActivity,
