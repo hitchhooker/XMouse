@@ -79,7 +79,7 @@ public class ListEditActivity extends AppCompatActivity implements MyInterface {
         ArrayList<ArrayList<String>> hosts = new ArrayList<ArrayList<String>>();
 
         if(type==ActivityType.type_host) {
-            hosts = MainActivity.db.listAll(DatabaseHandler.HOST_TABLE_NAME, new String[]{"Alias", "Host", "Username", "Port", "Password", "id"});
+            hosts = MainActivity.db.listAll(DatabaseHandler.HOST_TABLE_NAME, new String[]{"Alias", "Host", "Username", "Port", "Password", "WOLMACaddress", "id"});
         }else if(type == ActivityType.type_script) {
             hosts = MainActivity.db.listAll(DatabaseHandler.SCRIPT_TABLE_NAME, new String[]{"Alias", "Script", "id"});
         }
@@ -96,8 +96,9 @@ public class ListEditActivity extends AppCompatActivity implements MyInterface {
                 if(type==ActivityType.type_host) {
 
                     thisItem.setPassword(hosts.get(i).get(4));
+                    thisItem.setWOLMACaddress(hosts.get(i).get(5));
                     thisItem.setPort(hosts.get(i).get(3));
-                    thisItem.setDbId(Integer.valueOf(hosts.get(i).get(5)));
+                    thisItem.setDbId(Integer.valueOf(hosts.get(i).get(6)));
                 }
                 mHostItems.add(thisItem);
             }
@@ -117,6 +118,7 @@ public class ListEditActivity extends AppCompatActivity implements MyInterface {
         int userId = R.id.new_host_username;
         int portId = R.id.new_host_port;
         int passId = R.id.new_host_password;
+        int wolmacId = R.id.wol_mac_address;
 
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -134,6 +136,7 @@ public class ListEditActivity extends AppCompatActivity implements MyInterface {
         final EditText userBox = (EditText) layout.findViewById(userId);
         final EditText portBox = (EditText) layout.findViewById(portId);
         final EditText passwordBox = (EditText) layout.findViewById(passId);
+        final MacAddressEditText wolmacBox = (MacAddressEditText) layout.findViewById(wolmacId);
 
         //Building dialog
 
@@ -152,6 +155,7 @@ public class ListEditActivity extends AppCompatActivity implements MyInterface {
                 userBox.setText(mHostItems.get(pos).getUsername());
                 portBox.setText(mHostItems.get(pos).getPort());
                 passwordBox.setText(mHostItems.get(pos).getPassword());
+                wolmacBox.setText(mHostItems.get(pos).getWOLMACaddress());
             }
 
         }else{
@@ -178,15 +182,17 @@ public class ListEditActivity extends AppCompatActivity implements MyInterface {
                         mHostItems.get(pos).setUsername(userBox.getText().toString());
                         mHostItems.get(pos).setPort(portBox.getText().toString());
                         mHostItems.get(pos).setPassword(passwordBox.getText().toString());
+                        mHostItems.get(pos).setWOLMACaddress(wolmacBox.getText().toString());
 
                         String[] updateValues = new String[] {name,
                                 host,
                                 userBox.getText().toString(),
                                 portBox.getText().toString(),
-                                passwordBox.getText().toString()};
+                                passwordBox.getText().toString()},
+                                wolmacBox.getText().toString()};;
 
                         MainActivity.db.updateRow(DatabaseHandler.HOST_TABLE_NAME,
-                                new String[]{"Alias", "Host", "Username", "Port", "Password"},
+                                new String[]{"Alias", "Host", "Username", "Port", "Password", "WOLMACaddress"},
                                 updateValues,String.valueOf(mHostItems.get(pos).getDbId()));
 
                     }else if(type==ActivityType.type_script){
@@ -210,6 +216,7 @@ public class ListEditActivity extends AppCompatActivity implements MyInterface {
                         newHostItem.setUsername(userBox.getText().toString());
                         newHostItem.setPort(portBox.getText().toString());
                         newHostItem.setPassword(passwordBox.getText().toString());
+                        newHostItem.setWOLMACaddress(wolmacBox.getText().toString());
 
                         ArrayList<ArrayList<String>> newHost = new ArrayList<ArrayList<String>>();
 
@@ -236,6 +243,11 @@ public class ListEditActivity extends AppCompatActivity implements MyInterface {
                         valArr = new ArrayList<String>();
                         valArr.add(MainActivity.hostDBKeys.get(4).get(0));
                         valArr.add(passwordBox.getText().toString());
+                        newHost.add(valArr);
+
+                        valArr = new ArrayList<String>();
+                        valArr.add(MainActivity.hostDBKeys.get(5).get(0));
+                        valArr.add(wolmacBox.getText().toString());
                         newHost.add(valArr);
 
                         MainActivity.db.addRow(DatabaseHandler.HOST_TABLE_NAME,newHost);
