@@ -8,6 +8,7 @@ public class HostItem {
     private String Username;
     private String IP;
     private String Password;
+    private String WOLMACaddress;
 
     public Integer getDbId() {
         return dbId;
@@ -60,4 +61,12 @@ public class HostItem {
     }
 
     private String Port;
+
+    public String getWOLMACaddress() {
+        return WOLMACaddress;
+    }
+
+    public void setWOLMACaddress(String wolmacaddress) {
+        WOLMACaddress = wolmacaddress;
+    }
 }
