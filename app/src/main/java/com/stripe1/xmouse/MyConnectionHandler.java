@@ -65,31 +65,30 @@ public class MyConnectionHandler {
                 return;
             }
 		
-            if (MainActivity.setting_wolmac!="") {
-                try {
-                    StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-                    StrictMode.setThreadPolicy(policy);
+            try {
+                StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+                StrictMode.setThreadPolicy(policy);
+                if(!InetAddress.getByName(MainActivity.setting_host).isReachable(2000)) {
+                    if (MainActivity.setting_wolmac.length()==17) {
+                        String hexstr = "FFFFFFFFFFFF" + MainActivity.setting_wolmac.replace(":", "").repeat(16);
+                        int l = hexstr.length();
+                        byte[] buffer = new byte[l / 2];
+                        for (int i = 0; i < l; i += 2) {
+                            buffer[i / 2] = (byte) ((Character.digit(hexstr.charAt(i), 16) << 4)
+                                    + Character.digit(hexstr.charAt(i + 1), 16));
+                        }
+                        DatagramSocket socket = new DatagramSocket();
+                        socket.setBroadcast(true);
+                        /* FIXME: instead of using 255.255.255.255 it should be the actual WIFI/Ethernet broadcast address */
+                        DatagramPacket packet = new DatagramPacket(buffer, buffer.length, InetAddress.getByName("255.255.255.255"), 40000);
+                        socket.send(packet);
+                        socket.close();
 
-                    String hexstr = "FFFFFFFFFFFF" + MainActivity.setting_wolmac.replace(":", "").repeat(16);
-                    int l = hexstr.length();
-                    byte[] buffer = new byte[l / 2];
-                    for (int i = 0; i < l; i += 2) {
-                        buffer[i / 2] = (byte) ((Character.digit(hexstr.charAt(i), 16) << 4)
-                                + Character.digit(hexstr.charAt(i + 1), 16));
+                        InetAddress.getByName(MainActivity.setting_host).isReachable(5000);
                     }
-                    DatagramSocket socket = new DatagramSocket();
-                    socket.setBroadcast(true);
-                    /* FIXME: instead of using 255.255.255.255 it should be the actual WIFI/Ethernet broadcast address */
-                    DatagramPacket packet = new DatagramPacket(buffer, buffer.length, InetAddress.getByName("255.255.255.255"), 40000);
-                    socket.send(packet);
-                    socket.close();
-
-                    Thread.sleep(5000);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
                 }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
 
             SshConnectTask  t = (SshConnectTask) new SshConnectTask(	myActivity,
