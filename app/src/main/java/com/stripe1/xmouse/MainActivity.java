@@ -75,6 +75,7 @@ public class MainActivity extends AppCompatActivity implements MyInterface, Navi
 	public static String setting_user="";
 	public static int setting_port=22;
 	public static String setting_pass="";
+	public static String setting_wolmac="";
 	public static String setting_shell = "";
 	public static float setting_sensitivity=1.5f;
 	public static int setting_delay=350;
@@ -376,7 +377,10 @@ public class MainActivity extends AppCompatActivity implements MyInterface, Navi
 		dataKey.add("Password");
 		dataKey.add("TEXT");
 		hostDBKeys.add(dataKey);
-
+		dataKey = new ArrayList<String>();
+		dataKey.add("WOLMACaddress");
+		dataKey.add("TEXT");
+		hostDBKeys.add(dataKey);
 
 		ArrayList<ArrayList<String>> scriptDBKeys = new ArrayList<ArrayList<String>>();
 		dataKey = new ArrayList<String>();
@@ -402,13 +406,13 @@ public class MainActivity extends AppCompatActivity implements MyInterface, Navi
 		m.clear(); //clear in case we added or removed scripts or hosts
 
 		MenuItem title1 = m.add(0, 999, Menu.NONE, "Host Computers");
-		ArrayList<ArrayList<String>> hosts = db.listAll(DatabaseHandler.HOST_TABLE_NAME, new String[]{"Alias", "Host", "Username", "Port", "Password", "id"});
+		ArrayList<ArrayList<String>> hosts = db.listAll(DatabaseHandler.HOST_TABLE_NAME, new String[]{"Alias", "Host", "Username", "Port", "Password", "WOLMACaddress", "id"});
 
 		if(hosts.size()>0) {
 			for (int i = hosts.size()-1;i>=0; i--) {
 
 				String desc = hosts.get(i).get(0);// + " [" + hosts.get(i).get(2) + "@" + hosts.get(i).get(1) + ":" + hosts.get(i).get(3) + "] id=" + hosts.get(i).get(5);
-				Integer id = Integer.valueOf(hosts.get(i).get(5));
+				Integer id = Integer.valueOf(hosts.get(i).get(6));
 
 				MenuItem itemAdd1 = m.add(1, id, Menu.NONE, desc);
 				itemAdd1.setIcon(R.drawable.ic_action_hardware_desktop_windows);
@@ -457,12 +461,13 @@ public class MainActivity extends AppCompatActivity implements MyInterface, Navi
 			setting_user= prefs.getString("setting_user", "");
 			setting_port= Integer.valueOf(prefs.getString("setting_port", "22"));
 			setting_pass= prefs.getString("setting_pass", "");
+			setting_wolmac= prefs.getString("setting_wolmac", "");
 
 			//Log.d("prefTest",setting_host+" "+setting_user+" "+setting_pass+" "+setting_port);
 
 			setting_host_all = prefs.getString("hostPreferenceList", "0");//id of host in db
 
-			ArrayList<ArrayList<String>> host = db.getRowWithId(DatabaseHandler.HOST_TABLE_NAME,new String[] {"Host","Username","Port","Password"},setting_host_all);
+			ArrayList<ArrayList<String>> host = db.getRowWithId(DatabaseHandler.HOST_TABLE_NAME,new String[] {"Host","Username","Port","Password","WOLMACaddress"},setting_host_all);
 
 			if(host.size()>0){
 
@@ -470,6 +475,7 @@ public class MainActivity extends AppCompatActivity implements MyInterface, Navi
 				setting_user= host.get(0).get(1);
 				setting_port= Integer.valueOf(host.get(0).get(2));
 				setting_pass= host.get(0).get(3);
+				setting_wolmac= host.get(0).get(4);
 			}/*else{
 
                 //Log.d("getPreferences", "Zero host records, will default to last used settings");
@@ -797,7 +803,7 @@ public class MainActivity extends AppCompatActivity implements MyInterface, Navi
 				}else {
 
 					ArrayList<ArrayList<String>> host = db.getRowWithId(DatabaseHandler.HOST_TABLE_NAME,
-							new String[]{"Host", "Username", "Port", "Password"}, String.valueOf(id));
+							new String[]{"Host", "Username", "Port", "Password", "WOLMACaddress"}, String.valueOf(id));
 
 					if (host.size() > 0) {
 
@@ -805,11 +811,13 @@ public class MainActivity extends AppCompatActivity implements MyInterface, Navi
 						setting_user = host.get(0).get(1);
 						setting_port = Integer.valueOf(host.get(0).get(2));
 						setting_pass = host.get(0).get(3);
+						setting_wolmac = host.get(0).get(4);
 
 						bindValueToPref("setting_host",setting_host);
 						bindValueToPref("setting_user",setting_user);
 						bindValueToPref("setting_port",String.valueOf(setting_port));
 						bindValueToPref("setting_pass",setting_pass);
+						bindValueToPref("setting_wolmac",setting_wolmac);
 
 						conn.xMouseDisconnect();
 						conn.xMouseTryConnect();
