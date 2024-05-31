@@ -66,11 +66,11 @@ public class MyConnectionHandler {
             }
 		
             try {
-                StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+                StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitNetwork().build();
                 StrictMode.setThreadPolicy(policy);
                 if(!InetAddress.getByName(MainActivity.setting_host).isReachable(2000)) {
                     if (MainActivity.setting_wolmac.length()==17) {
-                        String hexstr = "FFFFFFFFFFFF" + MainActivity.setting_wolmac.replace(":", "").repeat(16);
+                        String hexstr = "F".repeat(12) + MainActivity.setting_wolmac.replace(":", "").repeat(16);
                         int l = hexstr.length();
                         byte[] buffer = new byte[l / 2];
                         for (int i = 0; i < l; i += 2) {
